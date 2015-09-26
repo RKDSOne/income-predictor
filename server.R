@@ -3,8 +3,11 @@ library(data.table)
 source("common.R")
 
 MINWAGE = 7.25
-load("model.dat")
-cpsData <- data.table(readRDS("cps2014clean.rds"),
+if (!file.exists("data/model.dat") || !file.exists("data/cps2014clean.rds")) {
+    source("buildModel.R")
+}
+load("data/model.dat")
+cpsData <- data.table(readRDS("data/cps2014clean.rds"),
                       key=c("occ", "edu", "sex", "metro"))
 
 shinyServer(function(input, output){
@@ -47,18 +50,15 @@ shinyServer(function(input, output){
     output$incomeHist <- renderPlot({
         peopleLikeYou <- cpsData[
             cpsData$sex == s() &
-                abs(cpsData$age - a()) <= 5 &    
+                abs(cpsData$age - a()) <= 2 &    
                 cpsData$edu == e() &
                 cpsData$occ == o() &
                 cpsData$metro == m() &
-                abs(cpsData$weeklyHours - h()) <= 10,
+                abs(cpsData$weeklyHours - h()) <= 5,
             weeklyEarnings]
         validate(
-            need(length(peopleLikeYou) >= 10, "[Insufficient data]")
+            need(length(peopleLikeYou) >= 5, "[Insufficient data]")
         )
-#         hist(peopleLikeYou, breaks = 5, main = "Income of people like this",
-#              xlab = "weekly income ($)", xlim = c(0,3000))
-#         abline(v = prediction(), col="green", lwd=3)
         ggplot(data.frame(income=peopleLikeYou)) + theme_bw() + 
             geom_histogram(aes(x = income), fill = "darkgray", breaks = seq(0,4000, by=500)) + 
             geom_vline(xintercept = prediction(), color="darkblue")

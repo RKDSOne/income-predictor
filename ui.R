@@ -4,11 +4,14 @@ source("common.R")
 shinyUI(pageWithSidebar(
     headerPanel("Income Predictor"),
     sidebarPanel(
+        h4("How to use this app"),
         p(
-            paste(
-                "Enter some basic information and I will predict your income.",
-                "The model assumes you live in the U.S. and are currently employed."
-            )
+            "This tool is easy to use. Just enter some basic information",
+            "about a person and it will try to predict that person's income.",
+            "In addition, if enough data are available, it will show you the",
+            "distribution of incomes for people with those characteristics.",
+            "The model based on 2014 data and is only valid for employed persons",
+            "living in the U.S."
         ),
         radioButtons("sex", "Sex:", listFromFactor(sexFactor)),
         numericInput("age", "Age:", value = 30, min=16, max=85),
@@ -26,19 +29,23 @@ shinyUI(pageWithSidebar(
           "repeated cross-validation, and the histogram is created from",
           "unweighted record counts from the Current Population Survey.",
           "The histogram includes records where the respondent's age is within",
-          "5 years of the input and weekly hours worked are within 10 of the input.")
+          "5 years of the input and weekly hours worked are within 5 of the input."),
+        p("As you can see from the histograms, actual incomes tend to spread",
+          "in a wide range around the predictions, which indicates that we",
+          "may be able to find better predictors. The model RMSE is about $475",
+          "for the weekly income prediction.")
     ),
     mainPanel(
         h3("Results"),
         p(
-            "I'm guessing you make $",
+            "People like this earn about $",
             strong(textOutput("predictedIncome", inline=TRUE)),
             " per week.",
             "($", textOutput("predictedIncomeAnnual", inline=TRUE), 
             "annually)"
         ),
         h3("Income distribution of similar people"),
-        p("The blue line is the predicted income."),
+        p("Note: The blue line is the predicted income."),
         plotOutput("incomeHist")
     )
 ))

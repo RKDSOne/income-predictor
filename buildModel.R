@@ -1,23 +1,21 @@
 source("common.R")
 
 buildModel <- function(dataFile) {
-    require(plyr)
     require(caret)
     
     rawCPS <- read.csv(dataFile)
-    # Remove records w/o good "hours worked" numbers
-    rawCPS <- rawCPS[rawCPS$PEHRUSL1 != -4 & rawCPS$PEHRUSL2 != -4, ]
+    # Remove records w/o good hours-worked numbers ("hours vary")
+    rawCPS <- rawCPS[rawCPS$PEHRUSL1 != -4 & rawCPS$PEHRUSL2 != -4 & rawCPS$PRERNWA > 0, ]
     cleanCPS <- data.frame(
-        weeklyEarnings = rawCPS$PRERNWA / 100.0,
+        weeklyEarnings = rawCPS$PRERNWA / 100.0, # 2 implied decimals in raw data
         sex = sexFactor[rawCPS$PESEX],
         age = as.numeric(rawCPS$PRTAGE),
         edu = eduFactor[unlist(eduRecodeList[as.character(rawCPS$PEEDUCA)])],
         occ = occFactor[rawCPS$PRDTOCC1],
         metro = metroFactor[rawCPS$GTMETSTA],
-        #weeklyHours = hoursFactor[rawCPS$PRHRUSL]
         weeklyHours = as.numeric(rawCPS$PEHRUSL1) + as.numeric(rawCPS$PEHRUSL2)
     )
-    saveRDS(cleanCPS, "cps2014clean.rds")
+    saveRDS(cleanCPS, "data/cps2014clean.rds")
     
     set.seed(33)
     inTraining <- createDataPartition(cleanCPS$weeklyEarnings, p = .75, 
@@ -34,21 +32,15 @@ buildModel <- function(dataFile) {
                  data = training,
                  method = "bayesglm",
                  trControl = fitControl
-                 #,ntree=200, maxnodes = 10
     )
-#     fit <- train(weeklyEarnings ~ ., data = training,
-#                  method = "knnreg",
-#                  trControl = fitControl
-#     )
 
-#     fit <- knnreg(weeklyEarnings ~ ., data = training, k = 12)
     testResults <- predict(fit, testing)
     
     print(fit)
-    cat("Performance on test set:\n")
-    print(RMSE(testResults, testing$weeklyEarnings))
+    cat(paste("Performance on test set:",
+              RMSE(testResults, testing$weeklyEarnings)))
     fit
 }
 
-model <- buildModel("cps2014.csv")
-save(model, file="model.dat")
+model <- buildModel("data/cps2014.csv")
+save(model, file="data/model.dat")
