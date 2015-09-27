@@ -2,3 +2,8 @@
 .RHistory
 
 data/model.rds
+
+pitchdeck-cache/
+pitchdeck-figure/
+pitchdeck.md
+rsconnect/
