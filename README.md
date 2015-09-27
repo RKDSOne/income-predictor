@@ -4,6 +4,8 @@
 
 This R/Shiny app uses a model based on Current Population Survey data to predict a person's income based on a handful of demographic and other characteristics.
 
+![app screenshot](screenshot.png)
+
 I wrote it for the Coursera class "Developing Data Products".
 
 ## Usage
