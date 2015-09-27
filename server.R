@@ -1,5 +1,6 @@
 library(shiny)
 library(data.table)
+library(ggplot2)
 source("common.R")
 
 MINWAGE = 7.25
