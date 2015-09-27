@@ -3,10 +3,10 @@ library(data.table)
 source("common.R")
 
 MINWAGE = 7.25
-if (!file.exists("data/model.dat") || !file.exists("data/cps2014clean.rds")) {
+if (!file.exists("data/model.rds") || !file.exists("data/cps2014clean.rds")) {
     source("buildModel.R")
 }
-load("data/model.dat")
+readRDS("data/model.rds")
 cpsData <- data.table(readRDS("data/cps2014clean.rds"),
                       key=c("occ", "edu", "sex", "metro"))
 

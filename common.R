@@ -1,5 +1,8 @@
-# HRYEAR4, HRMONTH, PRERELG, PRERNWA, PESEX, PRTAGE, PEEDUCA, 
-# PRDTOCC1, GTMETSTA, PRHRUSL, PEERNHRO, PEHRUSL1, PEHRUSL2
+RAW_DATA_FILE = "data/cps2014.csv"
+CLEAN_DATA_FILE = "data/cps2014clean.rds"
+MODEL_FILE = "data/model.rds"
+
+# Factors to represent data values...
 
 # PESEX
 sexFactor <- as.factor(c("male" = 1, "female" = 2))
