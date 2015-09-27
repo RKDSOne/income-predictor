@@ -1,0 +1,88 @@
+Predicting Incomes with Minimal Information
+========================================================
+author: JM
+date: 2015/09/27
+
+The Challenge
+========================================================
+
+Here at **SlinkedOut**, we'd *love* to be able to tag everyone's
+profile with a salary level, even if it's estimated.
+
+* But... most people don't want to share their salary level with us,
+  even if we tell them it's private
+* It would be profitable for us to know it - advertisers and
+  recuiters care
+* Can we model it based on the data they do give us?
+
+The Data
+========================================================
+
+For this prototype, we are going to use minimal data.
+Available predictors:
+
+* Gender
+* Age
+* Education level
+* Broad occupation type (~20 categories; e.g. "Management")
+* Area of residence: urban or not
+* Usual hours worked per week (don't have this yet, but we are
+  going to put up a fun Friday quiz to get users to provide it!)
+
+To validate this approach, we can use data from the 
+[Current Population Survey](http://thedataweb.rm.census.gov/ftp/cps_ftp.html).
+
+The Model
+========================================================
+
+```{r, echo=FALSE, cache=TRUE}
+source("common.R")
+model <- readRDS("data/model.rds")
+cpsData <- readRDS("data/cps2014clean.rds")
+```
+We first tried a random forest model, but it did not
+perform as well as we hoped. Settled on a GLM which also 
+offers some interpretability.
+
+Some predictions:
+
+* Female, 35, Bachelor's, computer/math field, metro area, works 45 hrs/wk
+```{r, echo=FALSE}
+input <- data.frame(sex = sexFactor[2], age = 35, edu = eduFactor[6], 
+                    occ = occFactor[3], metro = metroFactor[1], 
+                    weeklyHours = 45)
+# prediction is weekly income, convert to annual
+ex1 <- 52 * predict(model, input)
+print(ex1)
+```
+* Male, 40, Master's, education field, rural area, works 40 hr/wk
+```{r, echo=FALSE}
+input <- data.frame(sex = sexFactor[1], age = 40, edu = eduFactor[7],
+                    occ = occFactor[8], metro = metroFactor[2], 
+                    weeklyHours = 40)
+ex2 <- 52 * predict(model, input)
+print(ex2)
+```
+
+Results & Future Direction
+========================================================
+
+* Predictions generally good
+* Data likely too minimal; wide income spread among similar 
+  people (2nd example prev slide, blue line is prediction):
+
+```{r, echo=FALSE, fig.width=14,}
+library(ggplot2)
+example <- 52 * cpsData[
+    cpsData$sex == sexFactor[1] &
+    abs(cpsData$age - 40) <= 5 &
+    cpsData$edu == eduFactor[7] &
+    cpsData$occ == occFactor[8] &
+    cpsData$metro == metroFactor[2] &
+    abs(cpsData$weeklyHours - 40) <= 5
+    , "weeklyEarnings"]
+ggplot(data = data.frame(income = example)) + theme_bw() + 
+       geom_histogram(aes(x = income), fill = "darkgray", binwidth=10000) + 
+       geom_vline(xintercept = ex2, color="darkblue")
+```
+
