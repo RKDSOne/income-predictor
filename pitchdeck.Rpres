@@ -15,6 +15,9 @@ profile with a salary level, even if it's estimated.
   recuiters care
 * Can we model it based on the data they do give us?
 
+...And, can we make the predictions available to business users
+immediately with a prototype app? YES!
+
 The Data
 ========================================================
 
@@ -67,22 +70,11 @@ print(ex2)
 Results & Future Direction
 ========================================================
 
-* Predictions generally good
-* Data likely too minimal; wide income spread among similar 
-  people (2nd example prev slide, blue line is prediction):
+Predictions generally good but data maybe *too* minimal; 
+there's still a wide income spread among similar records. 
+See for yourself! Check out my prototype income prediction app here:
 
-```{r, echo=FALSE, fig.width=14,}
-library(ggplot2)
-example <- 52 * cpsData[
-    cpsData$sex == sexFactor[1] &
-    abs(cpsData$age - 40) <= 5 &
-    cpsData$edu == eduFactor[7] &
-    cpsData$occ == occFactor[8] &
-    cpsData$metro == metroFactor[2] &
-    abs(cpsData$weeklyHours - 40) <= 5
-    , "weeklyEarnings"]
-ggplot(data = data.frame(income = example)) + theme_bw() + 
-       geom_histogram(aes(x = income), fill = "darkgray", binwidth=10000) + 
-       geom_vline(xintercept = ex2, color="darkblue")
-```
+https://jnmiller.shinyapps.io/income-predictor
+
+![App screenshot](screenshot.png)
 
