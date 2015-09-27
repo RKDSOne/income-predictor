@@ -73,5 +73,10 @@ stripGlmLR = function(cm) {
 
 model <- buildModel("data/cps2014.csv")
 model$finalModel <- stripGlmLR(model$finalModel)
+# more model trimming
+attr(model$terms,".Environment") = c()
+model$control$index = c()
+model$control$indexOut = c()
+
 cat("Saving model...\n")
 saveRDS(model, file="data/model.rds")
