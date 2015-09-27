@@ -14,10 +14,10 @@ shinyUI(pageWithSidebar(
             "living in the U.S."
         ),
         radioButtons("sex", "Sex:", listFromFactor(sexFactor)),
-        numericInput("age", "Age:", value = 30, min=16, max=85),
+        numericInput("age", "Age (16-90):", value = 30, min=16, max=85),
         selectInput("edu", "Education:", listFromFactor(eduFactor), selected = 6),
         selectInput("occ", "Occupation category:", listFromFactor(occFactor), selected = 3),
-        numericInput("hours", "Usual hours worked per week:", value=40, min=0, max=80),
+        numericInput("hours", "Usual hours worked per week (5-100):", value=40, min=0, max=80),
         selectInput("metro", "Type of area where you live:", listFromFactor(metroFactor)),
         hr(),
         h4("About the model and data"),
